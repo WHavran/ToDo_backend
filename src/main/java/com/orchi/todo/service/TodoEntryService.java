@@ -16,15 +16,7 @@ public interface TodoEntryService {
 
     TodoEntryDetailDTO getDetailDTOById(long theId);
 
-    Page<TodoEntryListDTO> getAllListDTO(Pageable pageable);
-
-    Page<TodoEntryListDTO> getAllListDTOByStatus(Pageable pageable, String status);
-
-    Page<TodoEntryListDTO> getAllListDTOByDeadline(Pageable pageable, LocalDate deadline);
-
-    Page<TodoEntryListDTO> getAllListDTODeadlineTodayActive(Pageable pageable);
-
-    Page<TodoEntryListDTO> getAllListTDOByTitle(Pageable pageable, String title);
+    Page<TodoEntryListDTO> getAll(String title, String status, LocalDate deadLine, Pageable pageable);
 
     TodoEntryDetailDTO createNew(TodoEntryCreateDTO createDTO);
 

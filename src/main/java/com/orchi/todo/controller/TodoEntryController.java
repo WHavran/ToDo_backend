@@ -32,30 +32,13 @@ public class TodoEntryController {
         return todoEntryService.getDetailDTOById(id);
     }
 
-
-    @GetMapping("/all")
-    public Page<TodoEntryListDTO> getAll(Pageable pageable){
-        return todoEntryService.getAllListDTO(pageable);
-    }
-
-    @GetMapping("all/status={status}")
-    public Page<TodoEntryListDTO> getAll(@PathVariable String status, Pageable pageable){
-        return todoEntryService.getAllListDTOByStatus(pageable,status);
-    }
-
-    @GetMapping("all/today")
-    public Page<TodoEntryListDTO> getAllTodayDeadlineActive(Pageable pageable){
-        return todoEntryService.getAllListDTODeadlineTodayActive(pageable);
-    }
-
-    @GetMapping("all/deadline={deadline}")
-    public Page<TodoEntryListDTO> getAllByDeadline(@PathVariable LocalDate deadline, Pageable pageable){
-        return todoEntryService.getAllListDTOByDeadline(pageable,deadline);
-    }
-
-    @GetMapping("all/title={title}")
-    public Page<TodoEntryListDTO> getAllByTitle(@PathVariable String title, Pageable pageable){
-        return todoEntryService.getAllListTDOByTitle(pageable,title);
+    @GetMapping()
+    public Page<TodoEntryListDTO> getAllTodos(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) LocalDate deadline,
+            Pageable pageable){
+        return todoEntryService.getAll(title,status,deadline,pageable);
     }
 
     @PostMapping()
