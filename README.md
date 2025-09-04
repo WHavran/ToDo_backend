@@ -1,18 +1,20 @@
 # TodoList – Backend
 
-Backendová část projektu **TodoList** vytvořená v Javě pomocí Springu.
+Backendová část projektu **TodoList** vytvořená Java+Spring.
+Externí zadání: TodoList s datovou strukturou TodoEntry dle vlastního návrhu. Provedení skrze REST API. Návrh, implementace volná. 
 
 ## Architektura
 
 **Repository – Service – Controller**
 
-### Repository
+### Repository + Specification
 - Data jsou uložena v **MySQL** databázi.  
 - Skript pro vytvoření a naplnění databáze: `resources/dbscripts/todo_setdb.sql`  
 - K propojení a obsluze databáze je využito **JPA Repository (Hibernate)**.  
 - Vedle základních metod jsou doplněny i vlastní **JPQL dotazy** pro specifickou logiku.  
 - Pro testování je použita **H2 databáze**, která je nastavena přes `testing.properties`  
   (hlavní aplikace využívá `application.properties`).
+- Za účelem parametrizovaného vyhledávání a filtrování > implementace Specification. 
 
 ### Model
 - Obsahuje hlavní entitu **TodoEntry** a tři pomocná **DTO**, která slouží ke komunikaci mezi klientem a backendem.  
