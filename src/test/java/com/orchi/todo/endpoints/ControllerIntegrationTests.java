@@ -16,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -69,6 +70,10 @@ public class ControllerIntegrationTests {
                 LocalDate.of(2025, 8, 3),
                 LocalDate.of(2025, 8, 20),
                 null);
+        jdbcTemplate.update(sql, "Fifth2.0 Task", "Waiting for review", "IN_PROCESS",
+                LocalDate.of(2025, 8, 3),
+                LocalDate.of(2025, 9, 9),
+                null);
 
     }
 
@@ -99,33 +104,39 @@ public class ControllerIntegrationTests {
     }
 
     @Test
-    public void getAllHttpRequestCorrect() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/todoEntry/all"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content", hasSize(5)))
-                .andExpect(jsonPath("$.content[0].title").value("First Task"))
-                .andExpect(jsonPath("$.content[0].deadline").value("2025-08-10"))
-                .andExpect(jsonPath("$.content[0].status").value("CREATED"))
-                .andExpect(jsonPath("$.page.totalElements").value(5))
-                .andExpect(jsonPath("$.page.totalPages").value(1));
-    }
+    public void getAllByParams()throws Exception{
 
-    @Test
-    public void getAllHttpRequestFailed() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/todoEntry/all=failed"))
-                .andExpect(status().is4xxClientError());
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/todoEntry"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.content.length()").value(6));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/todoEntry?title=F"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.content.length()").value(4));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/todoEntry?title=F&status=IN_PROCESS"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.content.length()").value(2));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/todoEntry?title=F&status=IN_PROCESS&date=2025-09-09"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.content.length()").value(2));
     }
 
     @Test
     public void postCreateHttpRequestCorrect() throws Exception {
-        String jsonInput = """
+        LocalDate future = LocalDate.now().plusDays(1);
+        String jsonInput = String.format("""
                 {
                 "title": "Create Task",
                 "description": "Added task by creating test",
-                "deadline": "2025-08-08"
+                "deadline": "%s"
                 }
-                """;
+                """, future.toString());
 
         mockMvc.perform(post("/api/todoEntry")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -134,7 +145,7 @@ public class ControllerIntegrationTests {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.title").value("Create Task"))
                 .andExpect(jsonPath("$.description").value("Added task by creating test"))
-                .andExpect(jsonPath("$.deadline").value("2025-08-08"))
+                .andExpect(jsonPath("$.deadline").value(future.toString()))
                 .andExpect(jsonPath("$.status").value("CREATED"))
                 .andExpect(jsonPath("$.completedAt").isEmpty())
                 .andExpect(jsonPath("$.createdAt").value(LocalDate.now().toString()));
@@ -163,7 +174,7 @@ public class ControllerIntegrationTests {
                 .andExpect(jsonPath("$.listOfErrors[1].field", is("description")))
                 .andExpect(jsonPath("$.listOfErrors[1].message", is("Required range 5 - 500 characters")));
 
-        assertFalse(todoEntryRepository.findById(6L).isPresent());
+        assertFalse(todoEntryRepository.findById(7L).isPresent());
     }
 
     @Test
