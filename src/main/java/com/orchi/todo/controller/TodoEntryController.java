@@ -3,6 +3,7 @@ package com.orchi.todo.controller;
 import com.orchi.todo.model.dto.TodoEntryCreateDTO;
 import com.orchi.todo.model.dto.TodoEntryDetailDTO;
 import com.orchi.todo.model.dto.TodoEntryListDTO;
+import com.orchi.todo.model.enums.Status;
 import com.orchi.todo.service.TodoEntryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class TodoEntryController {
     @GetMapping()
     public Page<TodoEntryListDTO> getAllTodos(
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Status status,
             @RequestParam(required = false) LocalDate deadline,
             Pageable pageable){
         return todoEntryService.getAll(title,status,deadline,pageable);

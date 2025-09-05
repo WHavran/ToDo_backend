@@ -4,6 +4,7 @@ import com.orchi.todo.model.dto.TodoEntryCreateDTO;
 import com.orchi.todo.model.dto.TodoEntryDetailDTO;
 import com.orchi.todo.model.dto.TodoEntryListDTO;
 import com.orchi.todo.model.entity.TodoEntry;
+import com.orchi.todo.model.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,7 +17,7 @@ public interface TodoEntryService {
 
     TodoEntryDetailDTO getDetailDTOById(long theId);
 
-    Page<TodoEntryListDTO> getAll(String title, String status, LocalDate deadLine, Pageable pageable);
+    Page<TodoEntryListDTO> getAll(String title, Status status, LocalDate deadLine, Pageable pageable);
 
     TodoEntryDetailDTO createNew(TodoEntryCreateDTO createDTO);
 

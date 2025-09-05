@@ -11,6 +11,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -62,6 +63,16 @@ public class GlobalExceptionHandler {
                 "Entity not found"
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<ErrorResponse> handleBasicExs(MethodArgumentTypeMismatchException ex){
+        String message = "Invalid parameter: " + ex.getValue();
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                message);
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

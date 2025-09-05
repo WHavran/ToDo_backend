@@ -104,12 +104,18 @@ public class ControllerIntegrationTests {
     }
 
     @Test
-    public void getAllByParams()throws Exception{
+    public void getAllByParamsSuccess()throws Exception{
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/todoEntry"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$.content.length()").value(6));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/todoEntry?title=&status=&date="))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.content.length()").value(6));
+
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/todoEntry?title=F"))
                 .andExpect(status().isOk())
@@ -125,6 +131,19 @@ public class ControllerIntegrationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$.content.length()").value(2));
+    }
+
+    @Test
+    public void getAllByParamsFailed() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/todoEntry?status=F"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("Invalid parameter: F"));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/todoEntry?deadline=123"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("Invalid parameter: 123"));
     }
 
     @Test

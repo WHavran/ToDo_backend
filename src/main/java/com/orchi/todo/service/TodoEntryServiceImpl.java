@@ -55,9 +55,10 @@ public class TodoEntryServiceImpl implements TodoEntryService{
         return todoEntryMapper.mapEntityToDetailDTO(entity);
     }
     @Override
-    public Page<TodoEntryListDTO> getAll(String title, String status, LocalDate deadLine, Pageable pageable) {
+    public Page<TodoEntryListDTO> getAll(String title, Status status, LocalDate deadLine, Pageable pageable) {
+
         Specification<TodoEntry> spec = TodoEntrySpecifications.hasTitle(title)
-                .and(status != null ? TodoEntrySpecifications.hasStatus(Status.valueOf(status.toUpperCase())) : null)
+                .and(status != null ? TodoEntrySpecifications.hasStatus(status) : null)
                 .and(deadLine != null ? TodoEntrySpecifications.hasDeadline(deadLine) : null);
 
         return todoEntryRepository.findAll(spec, pageable)
